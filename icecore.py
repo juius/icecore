@@ -148,7 +148,8 @@ class IceCore:
         zommed_meters = [self.pixel2meter(p) for p in zoomed_pixels]
         meters = np.unique(np.round(np.linspace(*zommed_meters,100),decimals=2))
         meters2pixels_zoomed = [self.meter2pixel(m)-zoomed_pixels[0] for m in meters]
-        ax.set_yticks(meters2pixels_zoomed, labels=meters)
+        ax.set_yticks(meters2pixels_zoomed)
+        ax.set_yticklabels(meters)
         ax.set_ylabel('Depth in Meters')
         ax.set_title(self.img_file.name)
 
