@@ -8,8 +8,6 @@ from matplotlib.image import imread
 from skimage.measure import block_reduce
 from pathlib import Path
 
-d = Path(__file__).resolve().parents[1]
-
 class IceCore:
     def __init__(self, img_file):
         self.img_file = Path(img_file)
@@ -84,7 +82,7 @@ class IceCore:
 
     def locate_image(
             self,
-            meta_data_file=d/'EGRIP_visual_strat.tab'):
+            meta_data_file='./EGRIP_visual_strat.tab'):
         meta_df = pd.read_csv(
             meta_data_file,
             sep='\t',
@@ -105,7 +103,7 @@ class IceCore:
 
     def load_layers(
             self,
-            label_file=d/'Westhoff_et_al_Melt_Events_and_other_Bubble-free_Features_in_the_EastGRIP_Ice_Core.xlsx'):
+            label_file='./Westhoff_et_al_Melt_Events_and_other_Bubble-free_Features_in_the_EastGRIP_Ice_Core.xlsx'):
         label_df = pd.read_excel(label_file, sheet_name=1)
         df_molten = label_df[label_df['type of feature']
                              == 'meltLayer']
