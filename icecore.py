@@ -115,9 +115,9 @@ class IceCore:
         for _, row in layers_df.iterrows():
             self.layers.append((row['depth from'], row['depth to']))
         if len(self.layers) > 0:
-            self.has_molten_layers = True
+            self.has_melt_layer = True
         else:
-            self.has_molten_layers = False
+            self.has_melt_layer = False
 
     def pixel2meter(self, pixel):
         return pixel / (self.pixels_per_cm * 100) + self.top
