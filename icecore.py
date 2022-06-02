@@ -143,11 +143,8 @@ class IceCore:
             zoomed_pixels = [self.meter2pixel(m) for m in zoomed]
         else:
             zoomed_pixels = zoomed
-        print(zoomed_pixels)
         zommed_img = self.image[zoomed_pixels[0]:zoomed_pixels[1], :]
-
-        ax.imshow(zommed_img, cmap='gray')
-
+        ax.imshow(zommed_img)
         zommed_meters = [self.pixel2meter(p) for p in zoomed_pixels]
         meters = np.unique(np.round(np.linspace(*zommed_meters,100),decimals=2))
         meters2pixels_zoomed = [self.meter2pixel(m)-zoomed_pixels[0] for m in meters]
