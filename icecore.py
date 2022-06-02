@@ -16,7 +16,6 @@ class IceCore:
         self.image_raw = imread(self.img_file)
         self.set_parameters()
         
-
     def set_parameters(
             self,
             n_center_pixels=1000,
@@ -115,6 +114,10 @@ class IceCore:
         self.layers = []
         for _, row in layers_df.iterrows():
             self.layers.append((row['depth from'], row['depth to']))
+        if len(self.layers) > 0:
+            self.has_molten_layers = True
+        else:
+            self.has_molten_layers = False
 
     def pixel2meter(self, pixel):
         return pixel / (self.pixels_per_cm * 100) + self.top
