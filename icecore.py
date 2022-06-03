@@ -190,12 +190,12 @@ class IceCore:
                     axs[j].set_title(titles[j])
         fig.tight_layout
 
-    def plot_layers(self, pad=100):
-        try:
-            self.layers
-        except AttributeError:
-            self.load_layers()
-        n_layers = len(self.layers)
+    def plot_layers(self, pad=100, adjusted=True):
+        if adjusted:
+            layers = self.layers_adj
+        else:
+            layers = self.layers
+        n_layers = len(layers)
         assert n_layers > 0,\
             f'No melt layers in this photo'
         fig, axs = plt.subplots(
@@ -203,7 +203,7 @@ class IceCore:
                 12, n_layers * 5), sharex=False)
         if n_layers == 1:
             axs = [axs]
-        for i, label in enumerate(self.layers):
+        for i, label in enumerate(layers):
             pixel_positions = [self.meter2pixel(l) for l in label]
             cut_image = self.image[pixel_positions[0] -
                                    pad:pixel_positions[1] + pad, :]
@@ -213,7 +213,7 @@ class IceCore:
                           *org_lim, color='red')
             axs[i].set_xlim(org_lim)
 
-    def adjust_labels(self, shift):
+    def adjust_layers(self, shift):
         assert len(self.layers) > 0,\
             f'No melt layers in this photo'
         self.layers_pxl_adj = []
