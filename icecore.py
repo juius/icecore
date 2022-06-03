@@ -112,8 +112,10 @@ class IceCore:
         layers_df = df_molten[(df_molten['depth from'] >= self.top) & (
             df_molten['depth to'] <= self.bottom)]
         self.layers = []
+        self.layers_pxl = []
         for _, row in layers_df.iterrows():
             self.layers.append((row['depth from'], row['depth to']))
+            self.layers_pxl.append((self.meter2pixel(row['depth from']), self.meter2pixel(row['depth to'])))
         if len(self.layers) > 0:
             self.has_melt_layer = True
         else:
@@ -210,3 +212,14 @@ class IceCore:
             axs[i].hlines([pad, cut_image.shape[0] - pad],
                           *org_lim, color='red')
             axs[i].set_xlim(org_lim)
+
+    def adjust_labels(self, shift):
+        assert len(self.layers) > 0,\
+            f'No melt layers in this photo'
+        self.layers_pxl_adj = []
+        for l in self.layers_pxl:
+            self.layers_pxl_adj.append(tuple([m+shift for m in l]))
+        self.layers_adj = []
+        for adj_l in self.layers_pxl_adj:
+            self.layers_adj.append(tuple([self.pixel2meter(p) for p in adj_l]))
+
