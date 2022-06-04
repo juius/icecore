@@ -121,6 +121,43 @@ class IceCore:
         else:
             self.has_melt_layer = False
 
+    def adjust_layers(self, shift):
+        assert len(self.layers) > 0,\
+            f'No melt layers in this photo'
+        self.layers_pxl_adj = []
+        for l in self.layers_pxl:
+            self.layers_pxl_adj.append(tuple([m+shift for m in l]))
+        self.layers_adj = []
+        for adj_l in self.layers_pxl_adj:
+            self.layers_adj.append(tuple([self.pixel2meter(p) for p in adj_l]))
+
+    def autofix_layers(self):
+        intensities = np.mean(self.image,axis=1) * np.median(self.image,axis=1)
+        explore = 200 # looks for minimum of cost function 200 pixels to left and right
+        extra = 20 # considers 20 pixels to left and right from layer as well
+        layers = self.layers
+        layers_in_pixels = []
+        for l in layers:
+            layer_position = [int(self.meter2pixel(m)) for m in l]
+            layers_in_pixels.append(np.arange(layer_position[0]-extra, layer_position[1]+extra))
+        layers_mask = np.hstack(layers_in_pixels)
+        
+        shift_range = np.arange(-explore,explore)
+        costs = []
+        for shift in shift_range:
+            costs.append(np.sum(intensities[layers_mask+shift]))
+        self.cost4shift = (shift_range, np.asarray(costs))
+        self.shift = shift_range[np.argmin(costs)]        
+        self.adjust_layers(self.shift)
+        
+    def plot_shift_cost(self):
+        fig, ax = plt.subplots(figsize=(12,6))
+        ax.plot(*self.cost4shift)
+        ax.scatter(self.shift, np.min(self.cost4shift[1]), color='crimson', s=100)
+        ax.set_ylabel('Cost Function')
+        _ = ax.set_xlabel('Shift in Pixels')
+        print(f'The best shift for {self.img_file.name} is {self.shift} pixels')
+
     def pixel2meter(self, pixel):
         return pixel / (self.pixels_per_cm * 100) + self.top
 
@@ -212,14 +249,4 @@ class IceCore:
             axs[i].hlines([pad, cut_image.shape[0] - pad],
                           *org_lim, color='red')
             axs[i].set_xlim(org_lim)
-
-    def adjust_layers(self, shift):
-        assert len(self.layers) > 0,\
-            f'No melt layers in this photo'
-        self.layers_pxl_adj = []
-        for l in self.layers_pxl:
-            self.layers_pxl_adj.append(tuple([m+shift for m in l]))
-        self.layers_adj = []
-        for adj_l in self.layers_pxl_adj:
-            self.layers_adj.append(tuple([self.pixel2meter(p) for p in adj_l]))
 
