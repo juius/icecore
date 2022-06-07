@@ -131,7 +131,7 @@ class IceCore:
         for adj_l in self.layers_pxl_adj:
             self.layers_adj.append(tuple([self.pixel2meter(p) for p in adj_l]))
 
-    def autofix_layers(self, explore=500):
+    def autofix_layers(self, explore=500, min_threshold=2500):
         intensities = np.mean(self.image,axis=1) * np.median(self.image,axis=1)
         # looks for minimum of cost function 200 pixels to left and right
         extra = 20 # considers 20 pixels to left and right from layer as well
@@ -149,6 +149,16 @@ class IceCore:
         self.cost4shift = (shift_range, np.asarray(costs))
         self.shift = shift_range[np.argmin(costs)]        
         self.adjust_layers(self.shift)
+        
+        # some checks if autofix is reasonable
+        min_idx = np.argmin(self.cost4shift[1])
+        left_idx = np.max([min_idx-100, 0])
+        right_idx = np.min([min_idx+100, len(self.cost4shift[1])-1])
+        min_cost = self.cost4shift[1][min_idx]
+        cost_left = self.cost4shift[1][left_idx]
+        cost_right = self.cost4shift[1][right_idx]
+        if (np.abs(cost_left - min_cost) < min_threshold) and (np.abs(min_cost - cost_right) < min_threshold):
+            raise Warning(f'Autofix Layers failed for {self.img_file.name}')
         
     def plot_shift_cost(self):
         fig, ax = plt.subplots(figsize=(12,6))
