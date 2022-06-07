@@ -131,9 +131,9 @@ class IceCore:
         for adj_l in self.layers_pxl_adj:
             self.layers_adj.append(tuple([self.pixel2meter(p) for p in adj_l]))
 
-    def autofix_layers(self):
+    def autofix_layers(self, explore=500):
         intensities = np.mean(self.image,axis=1) * np.median(self.image,axis=1)
-        explore = 200 # looks for minimum of cost function 200 pixels to left and right
+        # looks for minimum of cost function 200 pixels to left and right
         extra = 20 # considers 20 pixels to left and right from layer as well
         layers = self.layers
         layers_in_pixels = []
@@ -155,6 +155,7 @@ class IceCore:
         ax.plot(*self.cost4shift)
         ax.scatter(self.shift, np.min(self.cost4shift[1]), color='crimson', s=100)
         ax.set_ylabel('Cost Function')
+        ax.set_title(self.img_file.name)
         _ = ax.set_xlabel('Shift in Pixels')
         print(f'The best shift for {self.img_file.name} is {self.shift} pixels')
 
