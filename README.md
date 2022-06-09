@@ -1,24 +1,36 @@
 # Classification of Melt Layers in Ice Cores
 
+All original data from (Weikusat *et al.* https://doi.org/10.1594/PANGAEA.925014)
+---
+
 Labels and additional meta data are in this repository as \*.tab and \*.xlsx\
-Find raw images with same camera setting:
-> https://sid.erda.dk/share_redirect/cJWYMvzmm1
+Raw images are availabel with two different `integration` option (`None` and `1`) under:
+1. https://sid.erda.dk/share_redirect/cJWYMvzmm1 
+2. **TBD**
 
-
-The labels can't be correctly located so we adjust the labels as shown here:
+For each set of images the labels need to be corrected as shown here:
 > https://colab.research.google.com/drive/10wXGv9pDnw-I4A4GQkss2vl9PBVHfT0n?usp=sharing
 
-
-After adjusting the labels and cropping the images to the same width the image is cut into several slices:
+Each image is cropped to the same width, the labels are adjusted and the image is sliced into several smaller images:
 > https://colab.research.google.com/drive/1G_R7h1Q72xgkWzrFKPHKqIJHoxq4CnIi?usp=sharing
 
-The processed slices are stored here:
-> https://sid.erda.dk/share_redirect/EGXmWRTHi1
+The processed slices for each set of images are stored here:
+1. https://sid.erda.dk/share_redirect/EGXmWRTHi1
+2. **TBD**
 
 with the naming convention:
-> *{ice_core_number}_{center_pixel_value}_{flip}_{label}.npy*
+`{ice_core_number}_{center_pixel_value}_{flip}_{label}.npy`
 
-where flip is one of [o, h, v, hv] indicating no, horizontal, vertical or horizontal and vertical flip.
+where `flip` is one of `[o, h, v, hv]` indicating no, horizontal, vertical or horizontal and vertical flip and `label` indicates if the slices contains any melt layer (`1`) or if it doesn't (`0`).
 
-A CNN is trained on those slices and gets an accuracy of 60-70% accuracy on the test set:
+A CNN is trained on the `integration=None` slices and achieves an accuracy of 60-70% accuracy on the test set:
 > https://colab.research.google.com/drive/1JUhUcL52CUQYvEhcodqmm9RTVGIy6knJ?usp=sharing
+
+---
+
+**To do:**
+- Try more image augmentation
+- Try other NN architectures
+- Process and slice images with `integration=1`
+- Train CNN on new slices
+- Combine predictions from the two seperate NN?
